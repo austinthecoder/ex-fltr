@@ -35,6 +35,18 @@ defmodule Fltr do
 
       ["any", [["id", id], ["active"]]]
 
+  Parse external input, compile it, and interpolate the resulting dynamic
+  expression into an Ecto query:
+
+      import Ecto.Query
+
+      {:ok, filter} = TeamFilter.parse(["name", "Rovers"])
+      filter = TeamFilter.to_expr(filter)
+
+      Team
+      |> where(^filter)
+      |> Repo.all()
+
   `use Fltr` supplies the public `parse/1` and `to_expr/1` functions, imports
   `Ecto.Query.dynamic/2`, and validates the required `to_expr` arities when the
   filter module is compiled.
