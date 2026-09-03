@@ -5,7 +5,7 @@ defmodule Fltr.MixProject do
     [
       app: :fltr,
       version: "0.1.0",
-      elixir: "~> 1.20",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -21,7 +21,7 @@ defmodule Fltr.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ecto, "~> 3.10"}
+      {:ecto, System.get_env("FLTR_ECTO_VERSION", "~> 3.10")}
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
   end
