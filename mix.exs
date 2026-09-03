@@ -1,28 +1,35 @@
 defmodule Fltr.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
+  @source_url "https://github.com/austinthecoder/ex-fltr"
+
   def project do
     [
       app: :fltr,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.14",
-      start_permanent: Mix.env() == :prod,
-      deps: deps()
+      description:
+        "Composable, reusable filters for Ecto queries with optional external input parsing.",
+      package: [
+        licenses: ["MIT"],
+        links: %{"GitHub" => @source_url},
+        files: ~w(lib mix.exs README.md LICENSE)
+      ],
+      source_url: @source_url,
+      docs: [
+        main: "readme",
+        extras: ["README.md"],
+        source_ref: "v#{@version}"
+      ],
+      deps: [
+        {:ecto, System.get_env("FLTR_ECTO_VERSION", "~> 3.10")},
+        {:ex_doc, "~> 0.40", only: :dev, runtime: false}
+      ]
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
-    [
-      extra_applications: [:logger]
-    ]
-  end
-
-  # Run "mix help deps" to learn about dependencies.
-  defp deps do
-    [
-      {:ecto, System.get_env("FLTR_ECTO_VERSION", "~> 3.10")}
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-    ]
+    []
   end
 end
