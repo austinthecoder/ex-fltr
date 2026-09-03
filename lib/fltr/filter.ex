@@ -1,28 +1,49 @@
 defmodule Fltr.Filter do
   @moduledoc """
-  Types and parsing implementation for filter expressions.
+  Types for canonical filter expressions and parse errors.
 
-  Most users should define a filter module with `use Fltr` and call the generated
-  `parse/1` and `to_expr/1` functions.
+  Most applications interact with the `parse/1`, `to_expr/1`, and type aliases
+  generated in a module that `use`s `Fltr`. The types here describe the shared
+  representation used by those modules.
   """
 
   @group_operators [:any, :all]
 
+  @typedoc """
+  The operator for a Boolean group.
+
+  `:all` requires every child expression; `:any` requires at least one.
+  """
   @type group_operator :: :any | :all
 
+  @typedoc """
+  A reason external input could not be converted to a canonical filter.
+
+    * `:invalid_filter` identifies an unsupported input shape.
+    * `:unknown_filter` identifies a name not declared by the filter module.
+    * `:invalid_arguments` identifies the original arguments when their count is
+      wrong or a custom parser rejects them.
+  """
   @type parse_error ::
           {:invalid_filter, term()}
           | {:unknown_filter, String.t() | atom()}
-          | {:invalid_arguments, atom(), term()}
+          | {:invalid_arguments, atom(), [term()]}
 
-  @type config :: Fltr.Config.t()
+  @typep config :: Fltr.Config.t()
 
-  @type parser :: (atom(), term() -> {:ok, term()} | :error)
+  @typep parser :: (atom(), term() -> {:ok, term()} | :error)
 
-  @typedoc "A validated tuple for one declared filter."
+  @typedoc """
+  A canonical tuple for one declared filter.
+
+  The first element is the filter name and the remaining elements are its
+  validated arguments, for example `{:active}` or `{:id, 7}`.
+  """
   @type filter :: tuple()
 
-  @typedoc "A filter or an `any`/`all` group containing at least one expression."
+  @typedoc """
+  A canonical leaf filter or a Boolean group containing at least one expression.
+  """
   @type t :: filter() | {group_operator(), [t(), ...]}
 
   @doc false

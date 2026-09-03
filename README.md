@@ -3,21 +3,10 @@
 Fltr lets you define and compose reusable filters for Ecto queries, with
 optional parsing for external input.
 
-## Installation
-
-Add `fltr` to the dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:fltr, "~> 0.1.0"}
-  ]
-end
-```
-
 ## Usage
 
-Define the supported filters and implement one `to_expr` clause for each filter:
+Define the supported filters and their argument counts, then implement one
+`to_expr` clause for each filter:
 
 ```elixir
 defmodule TeamFilter do
@@ -28,6 +17,10 @@ defmodule TeamFilter do
   def to_expr(:name, name), do: dynamic([team], team.name == ^name)
 end
 ```
+
+The argument count does not include the filter name. Here, `:active` maps to
+`to_expr/1`, while `:id` and `:name` map to `to_expr/2`. Fltr verifies the
+required callback arities when the module compiles.
 
 ### A single filter
 
@@ -111,4 +104,13 @@ def parse(:id, _id), do: :error
 
 Lists and string-named tuples are treated as external input and invoke
 `parse/2`. Atom-named tuples are trusted canonical expressions: Fltr checks
-their argument count but does not parse their values again.
+their argument count but does not parse their values again. Always call
+`parse/1` before converting external input into an atom-named tuple.
+
+`parse/1` returns an error describing invalid input:
+
+```elixir
+{:error, {:invalid_filter, input}}
+{:error, {:unknown_filter, name}}
+{:error, {:invalid_arguments, name, arguments}}
+```
